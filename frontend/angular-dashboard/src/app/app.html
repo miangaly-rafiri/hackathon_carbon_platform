@@ -4,19 +4,76 @@
       <p class="eyebrow">Hackathon Carbon Platform</p>
       <h1>{{ title }}</h1>
       <p class="hero-copy">
-        Vue rapide des sites, des émissions totales et de l'impact moyen par employé.
+        Calcul de l'empreinte carbone construction + exploitation par site.
       </p>
     </div>
 
-    <button class="refresh-button" type="button" (click)="load()" [disabled]="isLoading">
-      {{ isLoading ? 'Chargement…' : 'Rafraîchir les sites' }}
+    <button class="refresh-button" type="button" (click)="load()" [disabled]="isLoading()">
+      {{ isLoading() ? 'Chargement…' : 'Rafraîchir les sites' }}
     </button>
+  </section>
+
+  <section class="form-card">
+    <h2>Nouveau site</h2>
+    <div class="form-grid">
+      <label>
+        <span>Nom du site</span>
+        <input type="text" [value]="form().name" (input)="updateText('name', $any($event.target).value)" />
+      </label>
+
+      <label>
+        <span>Surface (m²)</span>
+        <input type="number" [value]="form().surface" (input)="updateNumber('surface', $any($event.target).value)" />
+      </label>
+
+      <label>
+        <span>Places parking</span>
+        <input type="number" [value]="form().parkingSpaces" (input)="updateNumber('parkingSpaces', $any($event.target).value)" />
+      </label>
+
+      <label>
+        <span>Énergie annuelle (MWh)</span>
+        <input type="number" [value]="form().energyMWh" (input)="updateNumber('energyMWh', $any($event.target).value)" />
+      </label>
+
+      <label>
+        <span>Employés</span>
+        <input type="number" [value]="form().employees" (input)="updateNumber('employees', $any($event.target).value)" />
+      </label>
+
+      <label>
+        <span>Béton (tonnes)</span>
+        <input type="number" [value]="form().concreteTons" (input)="updateNumber('concreteTons', $any($event.target).value)" />
+      </label>
+
+      <label>
+        <span>Acier (tonnes)</span>
+        <input type="number" [value]="form().steelTons" (input)="updateNumber('steelTons', $any($event.target).value)" />
+      </label>
+
+      <label>
+        <span>Verre (tonnes)</span>
+        <input type="number" [value]="form().glassTons" (input)="updateNumber('glassTons', $any($event.target).value)" />
+      </label>
+
+      <label>
+        <span>Bois (tonnes)</span>
+        <input type="number" [value]="form().woodTons" (input)="updateNumber('woodTons', $any($event.target).value)" />
+      </label>
+    </div>
+
+    <div class="form-actions">
+      <button class="primary" type="button" (click)="createSite()" [disabled]="isSaving()">
+        {{ isSaving() ? 'Envoi…' : 'Ajouter le site' }}
+      </button>
+      <p class="save-message" *ngIf="saveMessage()">{{ saveMessage() }}</p>
+    </div>
   </section>
 
   <section class="metrics-grid">
     <article class="metric-card">
       <span>Sites</span>
-      <strong>{{ sites.length }}</strong>
+      <strong>{{ sites().length }}</strong>
     </article>
 
     <article class="metric-card">
@@ -28,18 +85,49 @@
       <span>CO2 / employé</span>
       <strong>{{ averageCo2PerEmployee() | number:'1.0-2' }} kg</strong>
     </article>
+
+    <article class="metric-card">
+      <span>CO2 / m²</span>
+      <strong>{{ co2PerSquareMeter() | number:'1.0-2' }} kg</strong>
+    </article>
   </section>
 
-  <section class="status-card error" *ngIf="errorMessage">
-    {{ errorMessage }}
+  <section class="split-grid" *ngIf="sites().length > 0">
+    <article class="status-card">
+      <h3>Répartition par catégorie</h3>
+      <div class="category-row">
+        <span>Construction</span>
+        <strong>{{ totalConstruction() | number:'1.0-2' }} kg</strong>
+      </div>
+      <div class="bar-bg"><div class="bar bar-construction" [style.width.%]="barWidth(totalConstruction())"></div></div>
+
+      <div class="category-row">
+        <span>Exploitation</span>
+        <strong>{{ totalOperation() | number:'1.0-2' }} kg</strong>
+      </div>
+      <div class="bar-bg"><div class="bar bar-operation" [style.width.%]="barWidth(totalOperation())"></div></div>
+    </article>
+
+    <article class="status-card">
+      <h3>Graphique dynamique (CO2 total / site)</h3>
+      <div class="chart-row" *ngFor="let site of sites()">
+        <span>{{ site.name }}</span>
+        <div class="bar-bg"><div class="bar bar-total" [style.width.%]="barWidth(site.totalCO2)"></div></div>
+        <strong>{{ site.totalCO2 | number:'1.0-0' }} kg</strong>
+      </div>
+    </article>
   </section>
 
-  <section class="status-card empty" *ngIf="!isLoading && !errorMessage && sites.length === 0">
+  <section class="status-card error" *ngIf="errorMessage()">
+    {{ errorMessage() }}
+  </section>
+
+  <section class="status-card empty" *ngIf="!isLoading() && !errorMessage() && sites().length === 0">
     Aucun site trouvé. Ajoute des données via l'API backend puis recharge le tableau de bord.
   </section>
 
-  <section class="sites-grid" *ngIf="sites.length > 0">
-    <article class="site-card" *ngFor="let site of sites">
+  <section class="sites-grid" *ngIf="sites().length > 0">
+    <article class="site-card" *ngFor="let site of sites()">
       <div class="site-card__header">
         <h2>{{ site.name }}</h2>
         <span>{{ site.totalCO2 | number:'1.0-2' }} kgCO2</span>
@@ -58,7 +146,25 @@
           <dt>CO2 / m²</dt>
           <dd>{{ (site.totalCO2 / (site.surface || 1)) | number:'1.0-2' }} kg</dd>
         </div>
+        <div>
+          <dt>Construction</dt>
+          <dd>{{ site.constructionCO2 | number:'1.0-2' }} kg</dd>
+        </div>
+        <div>
+          <dt>Exploitation</dt>
+          <dd>{{ site.operationCO2 | number:'1.0-2' }} kg</dd>
+        </div>
       </dl>
     </article>
+  </section>
+
+  <section class="status-card" *ngIf="sortedSites().length > 1">
+    <h3>Comparaison des sites (du moins au plus émetteur)</h3>
+    <ol class="ranking-list">
+      <li *ngFor="let site of sortedSites()">
+        <span>{{ site.name }}</span>
+        <strong>{{ site.totalCO2 | number:'1.0-2' }} kg</strong>
+      </li>
+    </ol>
   </section>
 </main>

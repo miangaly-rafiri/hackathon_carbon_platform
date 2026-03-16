@@ -10,7 +10,11 @@ import com.hackathon.carbon.repository.SiteRepository;
 import com.hackathon.carbon.service.CarbonService;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = {
+ "http://localhost:4200",
+ "http://127.0.0.1:4200",
+ "http://172.20.10.2:4200"
+})
 @RequestMapping("/api/sites")
 public class SiteController {
 
@@ -25,6 +29,10 @@ public class SiteController {
  @PostMapping
  public Site create(@RequestBody Site site){
 
+    site.constructionCO2 = service.calculateConstruction(site);
+
+    site.operationCO2 = service.calculateOperation(site);
+
   site.totalCO2 = service.calculate(site);
 
   return repo.save(site);
@@ -33,7 +41,14 @@ public class SiteController {
 
  @GetMapping
  public List<Site> all(){
-  return repo.findAll();
+  List<Site> sites = repo.findAll();
+
+  for (Site site : sites) {
+   site.operationCO2 = service.calculateOperation(site);
+   site.constructionCO2 = Math.max(0, site.totalCO2 - site.operationCO2);
+  }
+
+  return sites;
  }
 
 }
