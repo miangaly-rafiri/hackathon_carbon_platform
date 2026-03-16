@@ -1,0 +1,160 @@
+ :host {
+	display: block;
+	min-height: 100vh;
+	color: #e5eef7;
+}
+
+.dashboard-shell {
+	min-height: 100vh;
+	padding: 32px;
+	background:
+		radial-gradient(circle at top left, rgba(61, 145, 64, 0.28), transparent 28%),
+		linear-gradient(180deg, #0b1020 0%, #11192c 100%);
+}
+
+.hero-card,
+.metric-card,
+.status-card,
+.site-card {
+	background: rgba(14, 23, 41, 0.78);
+	border: 1px solid rgba(148, 163, 184, 0.16);
+	border-radius: 20px;
+	box-shadow: 0 24px 60px rgba(15, 23, 42, 0.28);
+}
+
+.hero-card {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 24px;
+	padding: 28px;
+	margin-bottom: 24px;
+}
+
+.eyebrow {
+	margin: 0 0 8px;
+	text-transform: uppercase;
+	letter-spacing: 0.12em;
+	font-size: 12px;
+	color: #86efac;
+}
+
+h1,
+h2,
+p,
+dl,
+dt,
+dd {
+	margin: 0;
+}
+
+h1 {
+	font-size: clamp(32px, 4vw, 52px);
+	line-height: 1;
+}
+
+.hero-copy {
+	margin-top: 12px;
+	max-width: 700px;
+	color: #cbd5e1;
+}
+
+.refresh-button {
+	border: 0;
+	border-radius: 999px;
+	padding: 14px 22px;
+	font-size: 15px;
+	font-weight: 600;
+	color: #052e16;
+	background: linear-gradient(135deg, #86efac, #4ade80);
+	cursor: pointer;
+}
+
+.refresh-button:disabled {
+	opacity: 0.7;
+	cursor: wait;
+}
+
+.metrics-grid,
+.sites-grid {
+	display: grid;
+	gap: 18px;
+}
+
+.metrics-grid {
+	grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+	margin-bottom: 24px;
+}
+
+.metric-card {
+	padding: 20px;
+}
+
+.metric-card span,
+dt {
+	display: block;
+	color: #94a3b8;
+	font-size: 14px;
+	margin-bottom: 8px;
+}
+
+.metric-card strong,
+dd {
+	font-size: 28px;
+	font-weight: 700;
+}
+
+.status-card {
+	padding: 18px 20px;
+	margin-bottom: 24px;
+}
+
+.status-card.error {
+	border-color: rgba(248, 113, 113, 0.35);
+	color: #fecaca;
+}
+
+.status-card.empty {
+	color: #dbeafe;
+}
+
+.sites-grid {
+	grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+.site-card {
+	padding: 22px;
+}
+
+.site-card__header {
+	display: flex;
+	justify-content: space-between;
+	align-items: start;
+	gap: 12px;
+	margin-bottom: 20px;
+}
+
+.site-card__header span {
+	color: #86efac;
+	font-weight: 700;
+}
+
+dl {
+	display: grid;
+	gap: 16px;
+}
+
+dd {
+	font-size: 18px;
+}
+
+@media (max-width: 720px) {
+	.dashboard-shell {
+		padding: 20px;
+	}
+
+	.hero-card {
+		flex-direction: column;
+		align-items: stretch;
+	}
+}

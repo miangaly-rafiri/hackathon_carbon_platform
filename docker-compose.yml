@@ -1,0 +1,20 @@
+
+services:
+
+  postgres:
+    image: postgres:15
+    container_name: carbon_db
+    environment:
+      POSTGRES_DB: carbon
+      POSTGRES_USER: carbon
+      POSTGRES_PASSWORD: carbon
+    ports:
+      - "5432:5432"
+
+  backend:
+    build: ./backend
+    container_name: carbon_backend
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
