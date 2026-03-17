@@ -30,7 +30,7 @@ import { AuthService } from '../../services/auth.service';
               </defs>
             </svg>
           </div>
-          <h1 class="brand-name">CarbonTrack</h1>
+          <h1 class="brand-name">Plateforme Carbone</h1>
           <p class="brand-tagline">Plateforme de suivi carbone</p>
         </div>
 

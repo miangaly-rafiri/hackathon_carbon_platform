@@ -28,7 +28,7 @@ import { AuthService } from './services/auth.service';
                 </defs>
               </svg>
             </span>
-            <h1>CarbonTrack</h1>
+            <h1>Plateforme Carbone</h1>
           </div>
 
           <ul class="nav-menu">
@@ -85,7 +85,7 @@ import { AuthService } from './services/auth.service';
               <path d="M7 3 C5 5, 4 7, 7 8 C10 7, 9 5, 7 3Z" fill="#00e676" opacity="0.8"/>
               <line x1="7" y1="8" x2="7" y2="11" stroke="#00e676" stroke-width="1.5"/>
             </svg>
-            CarbonTrack
+            Plateforme Carbone
           </span>
           <span class="footer-sep">·</span>
           <span>Hackathon Sup de Vinci × Capgemini</span>
