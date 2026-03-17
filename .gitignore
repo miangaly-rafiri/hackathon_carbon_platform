@@ -1,0 +1,26 @@
+# macOS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Env
+.env
+.env.*
+
+# Java / Maven
+backend/target/
+backend/.mvn/
+
+# Node / Angular / React Native
+**/node_modules/
+frontend/angular-dashboard/dist/
+frontend/angular-dashboard/.angular/
+mobile/node_modules/
+
+# Docker local data
+**/.docker/
