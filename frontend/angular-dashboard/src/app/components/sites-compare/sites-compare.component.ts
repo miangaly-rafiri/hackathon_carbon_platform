@@ -29,7 +29,7 @@ import { SiteService } from '../../services/site.service';
             </select>
           </div>
 
-          <button class="btn-primary" (click)="compare()" [disabled]="loading || !siteAId || !siteBId || siteAId === siteBId">
+          <button class="btn-primary" (click)="compare()" [disabled]="loading">
             {{ loading ? 'Comparaison...' : 'Comparer' }}
           </button>
         </div>
@@ -139,18 +139,38 @@ import { SiteService } from '../../services/site.service';
       padding: 10px;
       border-radius: 10px;
       border: 1px solid rgba(110, 233, 255, 0.24);
-      background: rgba(255, 255, 255, 0.9);
-      color: var(--text);
+      background: #ffffff;
+      color: #1f2a37;
+      font-weight: 600;
+      -webkit-text-fill-color: #1f2a37;
+    }
+
+    select:focus {
+      outline: none;
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 0 4px rgba(110, 233, 255, 0.18);
+    }
+
+    option {
+      background: #ffffff;
+      color: #1f2a37;
     }
 
     .btn-primary {
-      padding: 10px 16px;
-      border: none;
-      border-radius: 10px;
+      padding: 11px 22px;
+      border: 2px solid rgba(255, 255, 255, 0.65);
+      border-radius: 999px;
       cursor: pointer;
       color: #ffffff;
       background: linear-gradient(135deg, var(--accent-cyan), var(--accent-violet), var(--accent-pink));
       font-weight: 600;
+      box-shadow: 0 0 0 3px rgba(0, 168, 247, 0.18), 0 10px 22px rgba(123, 141, 255, 0.28);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 0 0 4px rgba(0, 168, 247, 0.22), 0 12px 26px rgba(123, 141, 255, 0.34);
     }
 
     .btn-primary:disabled {
