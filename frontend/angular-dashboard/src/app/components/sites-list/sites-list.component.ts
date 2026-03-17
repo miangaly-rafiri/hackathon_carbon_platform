@@ -1,12 +1,13 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { SiteService } from '../../services/site.service';
 
 @Component({
   selector: 'app-site-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   template: `
     <div class="sites-container">
       <!-- Header -->
@@ -57,9 +58,39 @@ import { SiteService } from '../../services/site.service';
         <button class="btn-primary" (click)="createNewSite()">Créer mon premier site</button>
       </div>
 
+      <div *ngIf="!loading && sites.length > 0" class="filters-bar">
+        <div class="filter-field">
+          <label for="search">Rechercher</label>
+          <input id="search" type="text" [(ngModel)]="searchTerm" (ngModelChange)="applyFilters()" placeholder="Nom du site" />
+        </div>
+
+        <div class="filter-field">
+          <label for="sortBy">Trier par</label>
+          <select id="sortBy" [(ngModel)]="sortBy" (ngModelChange)="applyFilters()">
+            <option value="name">Nom</option>
+            <option value="totalCO2">CO2 total</option>
+            <option value="surface">Surface</option>
+            <option value="employees">Employes</option>
+          </select>
+        </div>
+
+        <div class="filter-field">
+          <label for="sortDirection">Ordre</label>
+          <select id="sortDirection" [(ngModel)]="sortDirection" (ngModelChange)="applyFilters()">
+            <option value="asc">Ascendant</option>
+            <option value="desc">Descendant</option>
+          </select>
+        </div>
+      </div>
+
+      <div *ngIf="!loading && sites.length > 0 && filteredSites.length === 0" class="empty-state compact">
+        <h3>Aucun site ne correspond aux filtres</h3>
+        <p>Modifie la recherche ou les options de tri</p>
+      </div>
+
       <!-- Sites Grid -->
-      <div *ngIf="!loading && sites.length > 0" class="sites-grid">
-        <div *ngFor="let site of sites" class="site-card">
+      <div *ngIf="!loading && filteredSites.length > 0" class="sites-grid">
+        <div *ngFor="let site of filteredSites" class="site-card">
           <!-- Card header -->
           <div class="card-header">
             <div class="card-header-left">
@@ -289,6 +320,44 @@ import { SiteService } from '../../services/site.service';
       gap: 18px;
     }
 
+    .filters-bar {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(0, 200, 90, 0.14);
+      background: rgba(8, 22, 12, 0.82);
+    }
+
+    .filter-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .filter-field label {
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .filter-field input,
+    .filter-field select {
+      border-radius: 10px;
+      border: 1px solid rgba(0, 200, 90, 0.2);
+      padding: 10px;
+      color: var(--text);
+      background: rgba(0, 200, 90, 0.05);
+    }
+
+    .empty-state.compact {
+      padding: 24px;
+      margin-bottom: 14px;
+    }
+
     /* Card */
     .site-card {
       background: rgba(8, 22, 12, 0.88);
@@ -481,8 +550,12 @@ import { SiteService } from '../../services/site.service';
 })
 export class SiteListComponent implements OnInit {
   sites: any[] = [];
+  filteredSites: any[] = [];
   loading = false;
   error = '';
+  searchTerm = '';
+  sortBy: 'name' | 'totalCO2' | 'surface' | 'employees' = 'name';
+  sortDirection: 'asc' | 'desc' = 'asc';
 
   constructor(
     private siteService: SiteService,
@@ -500,6 +573,7 @@ export class SiteListComponent implements OnInit {
     this.siteService.getAllSites().subscribe({
       next: (data) => {
         this.sites = data;
+        this.applyFilters();
         this.loading = false;
         this.cdr.detectChanges();
       },
@@ -534,5 +608,36 @@ export class SiteListComponent implements OnInit {
 
   viewDetails(id: number): void {
     this.router.navigate(['/sites/details', id]);
+  }
+
+  applyFilters(): void {
+    const search = this.searchTerm.trim().toLowerCase();
+
+    let result = this.sites.filter((site) =>
+      !search || (site.name || '').toLowerCase().includes(search)
+    );
+
+    result = [...result].sort((a, b) => {
+      let first: any = a[this.sortBy];
+      let second: any = b[this.sortBy];
+
+      if (this.sortBy === 'name') {
+        first = (first || '').toString().toLowerCase();
+        second = (second || '').toString().toLowerCase();
+      } else {
+        first = Number(first || 0);
+        second = Number(second || 0);
+      }
+
+      if (first < second) {
+        return this.sortDirection === 'asc' ? -1 : 1;
+      }
+      if (first > second) {
+        return this.sortDirection === 'asc' ? 1 : -1;
+      }
+      return 0;
+    });
+
+    this.filteredSites = result;
   }
 }
