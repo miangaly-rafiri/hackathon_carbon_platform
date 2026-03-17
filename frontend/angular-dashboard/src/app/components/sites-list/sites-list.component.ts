@@ -15,13 +15,18 @@ import { SiteService } from '../../services/site.service';
           <h1 class="page-title">Mes Sites</h1>
           <p class="page-subtitle">Gérez et suivez vos sites de construction</p>
         </div>
-        <button class="btn-primary" (click)="createNewSite()">
-          <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
-            <line x1="7.5" y1="1.5" x2="7.5" y2="13.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            <line x1="1.5" y1="7.5" x2="13.5" y2="7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-          Créer un site
-        </button>
+        <div class="header-actions">
+          <button class="btn-secondary" (click)="goToCompare()">
+            Comparer 2 sites
+          </button>
+          <button class="btn-primary" (click)="createNewSite()">
+            <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+              <line x1="7.5" y1="1.5" x2="7.5" y2="13.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <line x1="1.5" y1="7.5" x2="13.5" y2="7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            Créer un site
+          </button>
+        </div>
       </div>
 
       <!-- States -->
@@ -159,6 +164,29 @@ import { SiteService } from '../../services/site.service';
     .page-subtitle {
       color: var(--muted);
       font-size: 13px;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .btn-secondary {
+      padding: 12px 18px;
+      background: rgba(157, 182, 211, 0.18);
+      color: var(--text);
+      border: 1px solid rgba(157, 182, 211, 0.36);
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-secondary:hover {
+      transform: translateY(-2px);
+      background: rgba(157, 182, 211, 0.26);
     }
 
     .btn-primary {
@@ -485,6 +513,10 @@ export class SiteListComponent implements OnInit {
 
   createNewSite(): void {
     this.router.navigate(['/sites/new']);
+  }
+
+  goToCompare(): void {
+    this.router.navigate(['/sites/compare']);
   }
 
   editSite(id: number): void {

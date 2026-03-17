@@ -48,6 +48,10 @@ export class SiteService {
     return this.http.get<any[]>(`${this.apiUrl}/${id}/history`, { headers: this.getHeaders() });
   }
 
+  compareSites(siteAId: number, siteBId: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/compare?siteAId=${siteAId}&siteBId=${siteBId}`, { headers: this.getHeaders() });
+  }
+
   addMaterial(siteId: number, material: any): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/${siteId}/materials`, material, { headers: this.getHeaders() });
   }

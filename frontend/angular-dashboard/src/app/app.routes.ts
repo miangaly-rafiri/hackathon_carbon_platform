@@ -5,6 +5,7 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { SiteListComponent } from './components/sites-list/sites-list.component';
 import { SiteFormComponent } from './components/site-form/site-form.component';
 import { SiteDetailsComponent } from './components/site-details/site-details.component';
+import { SitesCompareComponent } from './components/sites-compare/sites-compare.component';
 import { AuthGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
@@ -35,6 +36,11 @@ export const routes: Routes = [
 		path: 'sites/details/:id', 
 		component: SiteDetailsComponent, 
 		canActivate: [AuthGuard] 
+	},
+	{
+		path: 'sites/compare',
+		component: SitesCompareComponent,
+		canActivate: [AuthGuard]
 	},
 	{ path: '**', redirectTo: '/dashboard' }
 ];

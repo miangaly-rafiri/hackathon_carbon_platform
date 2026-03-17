@@ -665,7 +665,28 @@ export class DashboardComponent implements OnInit {
 
   calculateKPIs(): void {
     this.sitesCount = this.sites.length;
-    if (this.sites.length === 0) { this.totalCO2 = 0; this.averageCO2 = 0; this.constructionRatio = 0; return; }
+    
+    if (this.sites.length === 0) {
+      this.totalCO2 = 0;
+      this.averageCO2 = 0;
+      this.constructionRatio = 0;
+      this.pieChartData = {
+        ...this.pieChartData,
+        datasets: [{
+          ...this.pieChartData.datasets[0],
+          data: [0, 0]
+        }]
+      };
+      this.barChartData = {
+        ...this.barChartData,
+        labels: [],
+        datasets: [{
+          ...this.barChartData.datasets[0],
+          data: []
+        }]
+      };
+      return;
+    }
 
     let totalConstruction = 0;
     let totalOperation = 0;
@@ -678,11 +699,23 @@ export class DashboardComponent implements OnInit {
 
     this.averageCO2 = this.totalCO2 / this.sitesCount;
     this.constructionRatio = totalConstruction / this.totalCO2 || 0;
-    this.pieChartData.datasets[0].data = [totalConstruction, totalOperation];
+    this.pieChartData = {
+      ...this.pieChartData,
+      datasets: [{
+        ...this.pieChartData.datasets[0],
+        data: [totalConstruction, totalOperation]
+      }]
+    };
   }
 
   updateCharts(): void {
-    this.barChartData.labels = this.sites.map(s => s.name);
-    this.barChartData.datasets[0].data = this.sites.map(s => s.totalCO2 || 0);
+    this.barChartData = {
+      ...this.barChartData,
+      labels: this.sites.map(s => s.name),
+      datasets: [{
+        ...this.barChartData.datasets[0],
+        data: this.sites.map(s => s.totalCO2 || 0)
+      }]
+    };
   }
 }

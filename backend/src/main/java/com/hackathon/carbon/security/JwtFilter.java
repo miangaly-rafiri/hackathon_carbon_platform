@@ -1,11 +1,13 @@
 package com.hackathon.carbon.security;
 
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
+import java.util.List;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,9 +27,10 @@ public class JwtFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String path = request.getRequestURI();
+        String method = request.getMethod();
 
-        // Excluire les endpoints publics
-        if (path.startsWith("/api/auth")) {
+        // Laisser passer les routes publiques et les preflight CORS
+        if (path.startsWith("/api/auth") || HttpMethod.OPTIONS.name().equalsIgnoreCase(method)) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -40,11 +43,16 @@ public class JwtFilter extends OncePerRequestFilter {
             if (jwtUtil.validateToken(token)) {
                 String email = jwtUtil.getEmailFromToken(token);
                 var auth = new UsernamePasswordAuthenticationToken(
-                        email, null, null);
+                        email, null, List.of(new SimpleGrantedAuthority("ROLE_USER")));
                 SecurityContextHolder.getContext().setAuthentication(auth);
+                filterChain.doFilter(request, response);
+                return;
             }
         }
 
-        filterChain.doFilter(request, response);
+        // Token absent ou invalide → 401 explicite
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType("application/json");
+        response.getWriter().write("{\"error\": \"Token invalide ou expiré\"}");
     }
 }
